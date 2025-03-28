@@ -13,7 +13,7 @@ test("users can edit their short link", function () {
         "url" => "https://old-url.com",
     ]);
 
-    $response = $this->put("/api/shorten/{$shortLink->id}", [
+    $response = $this->put("/api/short-links/{$shortLink->id}", [
         "url" => "https://new-url.com",
     ]);
 
@@ -41,7 +41,7 @@ test("users can only update their own links", function () {
     // User 2 tries to update User 1's short link
     $this->actingAs($user2);
 
-    $response = $this->patchJson("/api/shorten/{$shortLink->id}", [
+    $response = $this->patchJson("/api/short-links/{$shortLink->id}", [
         "url" => "https://new-url.com",
     ]);
 
@@ -57,7 +57,7 @@ test("users can only update their own links", function () {
 test("unauthenticated users cannot update links", function () {
     $shortLink = ShortLink::factory()->create();
 
-    $response = $this->patchJson("/api/shorten/{$shortLink->id}", [
+    $response = $this->patchJson("/api/short-links/{$shortLink->id}", [
         "url" => "https://new-url.com",
     ]);
 
@@ -73,7 +73,7 @@ test("users can delete their short link", function () {
         "url" => "https://old-url.com",
     ]);
 
-    $response = $this->delete("/api/shorten/{$shortLink->id}");
+    $response = $this->delete("/api/short-links/{$shortLink->id}");
 
     $response
         ->assertStatus(200)
@@ -88,7 +88,7 @@ test("users can delete their short link", function () {
 test("unauthenticated users cannot delete links", function () {
     $shortLink = ShortLink::factory()->create();
 
-    $response = $this->delete("/api/shorten/{$shortLink->id}");
+    $response = $this->delete("/api/short-links/{$shortLink->id}");
 
     $response->assertStatus(401);
 });
@@ -101,7 +101,7 @@ test("users cannot delete links they don't own", function () {
 
     $this->actingAs($user2);
 
-    $response = $this->delete("/api/shorten/{$shortLink->id}");
+    $response = $this->delete("/api/short-links/{$shortLink->id}");
 
     $response->assertStatus(403); // Forbidden
 
@@ -113,7 +113,7 @@ test("users cannot delete links they don't own", function () {
 test("unauthenticated users cannot edit links", function () {
     $shortLink = ShortLink::factory()->create();
 
-    $response = $this->put("/api/shorten/{$shortLink->id}", [
+    $response = $this->put("/api/short-links/{$shortLink->id}", [
         "url" => "https://new-url.com",
     ]);
 
@@ -128,7 +128,7 @@ test("users cannot edit others links", function () {
 
     $this->actingAs($user2);
 
-    $response = $this->put("/api/shorten/{$shortLink->id}", [
+    $response = $this->put("/api/short-links/{$shortLink->id}", [
         "url" => "https://new-url.com",
     ]);
 
@@ -146,7 +146,7 @@ test("users cannot create duplicate short links for the same URL", function () {
     ]);
 
     // Try creating another short link with the same URL
-    $response = $this->postJson("/api/shorten", [
+    $response = $this->postJson("/api/short-links", [
         "url" => "https://example.com",
     ]);
 
@@ -181,9 +181,6 @@ test("clicks count increments when short link is visited", function () {
     $this->assertEquals(1, $shortLink->clicks);
 });
 
-use App\Models\User;
-use App\Models\ShortLink;
-
 test("user can only have a maximum of 15 links", function () {
     // Create a user
     $user = User::factory()->create();
@@ -199,7 +196,7 @@ test("user can only have a maximum of 15 links", function () {
     $this->assertCount(15, $user->shortLinks);
 
     // Try to create a 16th link
-    $response = $this->actingAs($user)->post("/api/shorten", [
+    $response = $this->actingAs($user)->post("/api/short-links", [
         "url" => "https://example.com/16",
     ]);
 
@@ -214,7 +211,7 @@ test("URL must be valid", function () {
     $user = User::factory()->create();
 
     // Try to create an invalid URL
-    $response = $this->actingAs($user)->post("/api/shorten", [
+    $response = $this->actingAs($user)->post("/api/short-links", [
         "url" => "invalid-url",
     ]);
 
@@ -222,7 +219,7 @@ test("URL must be valid", function () {
 });
 
 test("can redirect shortened link", function () {
-    $response = $this->postJson("/api/shorten", [
+    $response = $this->postJson("/api/short-links", [
         "url" => "https://example.com",
     ]);
 
@@ -238,14 +235,14 @@ test("can redirect shortened link", function () {
 });
 
 test("can shorten link", function () {
-    $response = $this->post("/api/shorten", [
+    $response = $this->post("/api/short-links", [
         "url" => "https://example.com",
     ]);
 
     $response->assertStatus(201)->assertJsonStructure(["short_url"]);
 });
 
-test('user cannot access another user\'s short links', function () {
+test("user cannot access another user's short links", function () {
     $user = User::factory()->create();
     $otherUser = User::factory()->create();
 
@@ -255,7 +252,9 @@ test('user cannot access another user\'s short links', function () {
     ]);
 
     // Authenticate as a different user
-    $response = $this->actingAs($user)->get("/api/shorten/{$shortLink->id}");
+    $response = $this->actingAs($user)->get(
+        "/api/short-links/{$shortLink->id}"
+    );
 
     $response->assertStatus(403);
 });
@@ -271,9 +270,12 @@ test("user can edit their short link's short code", function () {
     ]);
 
     // Edit the short link's short URL
-    $response = $this->actingAs($user)->put("/api/shorten/{$shortLink->id}", [
-        "short_url" => "newcode123",
-    ]);
+    $response = $this->actingAs($user)->put(
+        "/api/short-links/{$shortLink->id}",
+        [
+            "short_url" => "newcode123",
+        ]
+    );
 
     // Assert that the short link was updated successfully
     $response->assertStatus(200);
@@ -300,15 +302,18 @@ test("user cannot edit short link to an existing short code", function () {
     ]);
 
     // Attempt to change the short code to the existing one
-    $response = $this->actingAs($user)->put("/api/shorten/{$shortLink->id}", [
-        "short_url" => "existing123",
-    ]);
+    $response = $this->actingAs($user)->put(
+        "/api/short-links/{$shortLink->id}",
+        [
+            "short_url" => "existing123",
+        ]
+    );
 
     $response->assertStatus(422);
     $response->assertJsonValidationErrors(["short_url"]);
 });
 
-test('user cannot edit another user\'s short link', function () {
+test("user cannot edit another users short link", function () {
     $user = User::factory()->create();
     $otherUser = User::factory()->create();
 
@@ -320,9 +325,12 @@ test('user cannot edit another user\'s short link', function () {
     ]);
 
     // Attempt to edit another user's short link
-    $response = $this->actingAs($user)->put("/api/shorten/{$shortLink->id}", [
-        "short_url" => "newshortcode",
-    ]);
+    $response = $this->actingAs($user)->put(
+        "/api/short-links/{$shortLink->id}",
+        [
+            "short_url" => "newshortcode",
+        ]
+    );
 
     $response->assertStatus(403);
 });
@@ -338,9 +346,12 @@ test("database reflects the updated short code", function () {
 
     // Edit the short link's short URL
     $newShortCode = "newshortcode";
-    $response = $this->actingAs($user)->put("/api/shorten/{$shortLink->id}", [
-        "short_url" => $newShortCode,
-    ]);
+    $response = $this->actingAs($user)->put(
+        "/api/short-links/{$shortLink->id}",
+        [
+            "short_url" => $newShortCode,
+        ]
+    );
 
     // Assert the change in the database
     $response->assertStatus(200);
@@ -353,7 +364,7 @@ test("database reflects the updated short code", function () {
 test("short code is generated when shortening a link", function () {
     $user = User::factory()->create();
 
-    $response = $this->actingAs($user)->post("/api/shorten", [
+    $response = $this->actingAs($user)->post("/api/short-links", [
         "url" => "https://example.com",
     ]);
 
