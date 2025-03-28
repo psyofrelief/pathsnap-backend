@@ -221,8 +221,6 @@ test("URL must be valid", function () {
     $response->assertStatus(422)->assertJsonValidationErrors(["url"]);
 });
 
-<?php
-
 test("can redirect shortened link", function () {
     $response = $this->postJson("/api/shorten", [
         "url" => "https://example.com",
@@ -352,19 +350,19 @@ test("database reflects the updated short code", function () {
     ]);
 });
 
-test('short code is generated when shortening a link', function () {
+test("short code is generated when shortening a link", function () {
     $user = User::factory()->create();
 
     $response = $this->actingAs($user)->post("/api/shorten", [
-        'url' => 'https://example.com',
+        "url" => "https://example.com",
     ]);
 
     // Assert the response status and structure
-    $response->assertStatus(201)->assertJsonStructure(['short_url']);
+    $response->assertStatus(201)->assertJsonStructure(["short_url"]);
 
     // Extract the short code from the response
-    $shortUrl = $response->json('short_url');
-    $shortCode = last(explode('/', $shortUrl)); // Extract the short code from the URL
+    $shortUrl = $response->json("short_url");
+    $shortCode = last(explode("/", $shortUrl)); // Extract the short code from the URL
 
     // Validate the length of the short code
     $this->assertGreaterThanOrEqual(2, strlen($shortCode));
@@ -373,4 +371,3 @@ test('short code is generated when shortening a link', function () {
     // Optionally, check that it only contains alphanumeric characters
     $this->assertMatchesRegularExpression('/^[a-zA-Z0-9]+$/', $shortCode);
 });
-
