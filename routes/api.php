@@ -12,5 +12,3 @@ Route::middleware("auth:sanctum")->apiResource(
     "short-links",
     ShortLinkController::class
 );
-
-Route::get("/{shortCode}", [ShortLinkController::class, "redirect"]);

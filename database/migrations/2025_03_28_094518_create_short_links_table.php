@@ -16,7 +16,7 @@ return new class extends Migration {
             $table->string("url");
             $table->string("short_url")->unique();
             $table->unsignedInteger("clicks")->default(0);
-            $table->string("qr_code");
+            $table->string("qr_code")->nullable();
             $table->timestamps();
         });
     }
