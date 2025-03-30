@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "1089ed34766f3be025e2e9e72d626b17",
+    "content-hash": "bdcb5f6e157f48ac458801d31d9c371e",
     "packages": [
         {
             "name": "brick/math",
@@ -3349,6 +3349,48 @@
                 }
             ],
             "time": "2024-04-27T21:32:50+00:00"
+        },
+        {
+            "name": "sjk4/ngrok",
+            "version": "2.3.34",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/sjk4/ngrok.git",
+                "reference": "210ef92f6e5d08b458045b39b532762fc1e33ef3"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/sjk4/ngrok/zipball/210ef92f6e5d08b458045b39b532762fc1e33ef3",
+                "reference": "210ef92f6e5d08b458045b39b532762fc1e33ef3",
+                "shasum": ""
+            },
+            "bin": [
+                "bin/ngrok"
+            ],
+            "type": "library",
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Alan Shreve",
+                    "email": "alan@inconshreveable.com",
+                    "homepage": "https://inconshreveable.com/"
+                }
+            ],
+            "description": "ngrok creates a secure introspectable tunnels to localhost.",
+            "homepage": "https://ngrok.com/",
+            "keywords": [
+                "localhost",
+                "ngrok",
+                "tunnel"
+            ],
+            "support": {
+                "issues": "https://github.com/sjk4/ngrok/issues",
+                "source": "https://github.com/sjk4/ngrok/tree/2.3.34"
+            },
+            "time": "2019-11-04T16:21:23+00:00"
         },
         {
             "name": "symfony/clock",
