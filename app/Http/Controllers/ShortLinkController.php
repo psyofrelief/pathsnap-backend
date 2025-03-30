@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\ShortLink;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
 
 class ShortLinkController extends Controller
@@ -14,7 +15,8 @@ class ShortLinkController extends Controller
      */
     public function index()
     {
-        return ShortLink::latest()->paginate(10);
+        $shortLinks = Auth::user()->links;
+        return response()->json($shortLinks);
     }
 
     /**
@@ -23,12 +25,14 @@ class ShortLinkController extends Controller
     public function store(Request $request)
     {
         $data = $request->validate([
+            "title" => "string", // Allow title to be missing but still stored
             "url" => "required|url",
             "short_url" =>
                 "nullable|string|min:2|max:8|unique:short_links,short_url",
         ]);
 
         $user = Auth::user();
+        Log::info("Received data:", $request->all());
 
         // Check if the user already has a short link for the same URL
         if (
@@ -48,6 +52,8 @@ class ShortLinkController extends Controller
 
         $shortLink = ShortLink::create($data);
 
+        Log::info("Received link:", [$shortLink]);
+
         return response()->json($shortLink, 201);
     }
 
@@ -64,6 +70,7 @@ class ShortLinkController extends Controller
         }
 
         $data = $request->validate([
+            "title" => "string",
             "url" => "sometimes|required|url",
             "short_url" => [
                 "sometimes",
