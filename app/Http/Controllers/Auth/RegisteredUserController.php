@@ -46,19 +46,50 @@ class RegisteredUserController extends Controller
 
         return response()->noContent();
     }
+
     /**
-     * Delete the authenticated user's account.
+     * Update the authenticated user's details (excluding email).
      */
-    public function destroy($id)
+    public function update(Request $request)
     {
         $user = Auth::user();
 
-        if (!$user || $user->id !== (int) $id) {
+        if (!$user) {
+            return response()->json(["message" => "Unauthorized"], 401);
+        }
+
+        $validated = $request->validate([
+            "name" => ["required", "string", "max:255"],
+            "password" => ["nullable", "confirmed", Rules\Password::defaults()],
+        ]);
+
+        $user->name = $validated["name"];
+
+        if (!empty($validated["password"])) {
+            $user->password = Hash::make($validated["password"]);
+        }
+
+        $user->save();
+
+        return response()->json(
+            ["message" => "Profile updated successfully", "user" => $user],
+            200
+        );
+    }
+
+    /**
+     * Delete the authenticated user's account.
+     */
+    public function destroy()
+    {
+        $user = Auth::user();
+
+        if (!$user) {
             return response()->json(["message" => "Unauthorized"], 401);
         }
 
         // Logout user and invalidate session
-        Auth::logout();
+        Auth::guard("web")->logout();
         request()->session()->invalidate();
         request()->session()->regenerateToken();
 

@@ -52,8 +52,6 @@ class ShortLinkController extends Controller
 
         $shortLink = ShortLink::create($data);
 
-        Log::info("Received link:", [$shortLink]);
-
         return response()->json($shortLink, 201);
     }
 
