@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\ShortLinkController;
+use App\Http\Controllers\SupportController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -18,3 +19,5 @@ Route::middleware("auth:sanctum")->apiResource(
     "short-links",
     ShortLinkController::class
 );
+
+Route::post("/support", [SupportController::class, "sendSupportEmail"]);
