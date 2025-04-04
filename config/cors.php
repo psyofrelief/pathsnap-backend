@@ -1,7 +1,6 @@
 <?php
 
 return [
-
     /*
     |--------------------------------------------------------------------------
     | Cross-Origin Resource Sharing (CORS) Configuration
@@ -11,24 +10,28 @@ return [
     | or "CORS". This determines what cross-origin operations may execute
     | in web browsers. You are free to adjust these settings as needed.
     |
-    | To learn more: https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS
+    | To larn more: https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS
     |
     */
 
-    'paths' => ['*'],
+    "paths" => ["*"],
 
-    'allowed_methods' => ['*'],
+    "allowed_methods" => ["*"],
 
-    'allowed_origins' => [env('FRONTEND_URL', 'http://localhost:3000')],
+    "allowed_origins" => [
+        "http://localhost*",
+        "https://p-s.co",
+        "https://www.p-s.co",
+        "https://q.p-s.co",
+    ],
 
-    'allowed_origins_patterns' => [],
+    "allowed_origins_patterns" => [],
 
-    'allowed_headers' => ['*'],
+    "allowed_headers" => ["*"],
 
-    'exposed_headers' => [],
+    "exposed_headers" => [],
 
-    'max_age' => 0,
+    "max_age" => 0,
 
-    'supports_credentials' => true,
-
+    "supports_credentials" => true,
 ];
