@@ -25,7 +25,7 @@ class ShortLinkController extends Controller
     public function store(Request $request)
     {
         $data = $request->validate([
-            "title" => "string", // Allow title to be missing but still stored
+            "title" => "string",
             "url" => "required|url",
             "short_url" =>
                 "nullable|string|min:2|max:8|unique:short_links,short_url",
@@ -81,7 +81,6 @@ class ShortLinkController extends Controller
             ],
         ]);
 
-        // Update the short link
         $shortLink->update($data);
 
         return response()->json(["message" => "Link updated successfully"]);
@@ -92,7 +91,6 @@ class ShortLinkController extends Controller
      */
     public function destroy($id)
     {
-        // Find the short link by ID
         $shortLink = ShortLink::findOrFail($id);
 
         // Check if the authenticated user is the owner of the short link
